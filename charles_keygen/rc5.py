@@ -4,7 +4,7 @@ def rotate_left(x, n, bits=32):
 def rotate_right(x, n, bits=32):
     return ((x >> (n % bits)) | (x << (bits - (n % bits)))) & (1 << bits) - 1
 
-class RC5:
+class RC5: # 32-bit
     def __init__(self):
         self.r = 12
         self.t = 26

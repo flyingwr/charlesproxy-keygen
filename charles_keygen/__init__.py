@@ -13,7 +13,7 @@ def generate_key(name):
         size = len(name)
 
         name_array = bytearray(4) + name.encode()
-        name_array += b"\x00" * (8 - len(name_array) % 8)
+        name_array += bytes(8 - len(name_array) % 8)
         name_array[0], name_array[1], name_array[2], name_array[3] = size >> 24 & 0xff, size >> 16 & 0xff, size >> 8 & 0xff, size & 0xff
 
         r = RC5()
