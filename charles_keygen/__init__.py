@@ -12,10 +12,8 @@ def generate_key(name):
     def name_checksum(name):
         size = len(name)
 
-        name_array = bytearray(4) + bytearray(name.encode())
-        array_size = len(name_array)
-        if array_size % 8:
-            name_array += bytes(8 - array_size % 8)
+        name_array = bytearray(4) + name.encode()
+        name_array += b"\x00" * (8 - len(name_array) % 8)
         name_array[0], name_array[1], name_array[2], name_array[3] = size >> 24 & 0xff, size >> 16 & 0xff, size >> 8 & 0xff, size & 0xff
 
         r = RC5()
@@ -39,7 +37,7 @@ def generate_key(name):
     key_dec = [0, 0]
 
     r = RC5()
-    r.schedule(-334581843, -1259282228)
+    r.schedule(3960385453, 3035685068)
     r.decrypt(key_enc, key_dec)
 
     key_decrypted = ((key_dec[1] & 0xffffffff) << 32) | key_dec[0] & 0xffffffff
