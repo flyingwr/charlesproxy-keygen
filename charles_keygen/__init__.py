@@ -1,10 +1,12 @@
 from .rc5 import rotate_left, RC5
 
+import struct
+
 def generate_key(name):
     def xor_checksum(n):
         n2 = 0
         for i in range(56, -1, -8):
-            n2 ^= (n >> i) & 0xFF
+            n2 ^= (n >> i) & 0xff
         return n2
 
     def name_checksum(name):
@@ -22,7 +24,7 @@ def generate_key(name):
 
         n = 0
         for by in output_array:
-            n ^= by
+            n ^= struct.unpack("b", struct.pack("B", by))[0] # get signed
             n = rotate_left(n & 0xffffffff, 3)
         return n
 
@@ -31,7 +33,7 @@ def generate_key(name):
     license_key_checksum ^= license_name_checksum_val
     b_license_key = license_key_checksum
     b_license_key <<= 32
-    b_license_key |= 0x1CAD6BC
+    b_license_key |= 0x1cad6bc
 
     key_enc = [b_license_key & 0xffffffff, b_license_key >> 32]
     key_dec = [0, 0]
@@ -40,7 +42,7 @@ def generate_key(name):
     r.schedule(-334581843, -1259282228)
     r.decrypt(key_enc, key_dec)
 
-    key_decrypted = ((key_dec[1] & 0xffffffff) << 32) | key_dec[0]
+    key_decrypted = ((key_dec[1] & 0xffffffff) << 32) | key_dec[0] & 0xffffffff
 
     xor_checksum_val = xor_checksum(b_license_key)
     return f"{xor_checksum_val:02X}{key_decrypted:016X}"
