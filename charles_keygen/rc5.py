@@ -47,32 +47,44 @@ class RC5: # 32-bit
         array = [0] * len(block)
         n = len(block)
 
-        n2 = j = k = l = 0
+        l = k = 0
         for i in range(n):
-            if j < 4:
-                l <<= 8
-                l |= block[i] & 0xff
+            if i % 8 < 4:
+                l = (l << 8) | (block[i] & 0xff)
             else:
-                k <<= 8
-                k |= block[i] & 0xff
-            j += 1
+                k = (k << 8) | (block[i] & 0xff)
             
-            if n2 == 7:
+            if i % 8 == 7:
                 pt = [k, l]
                 ct = [0, 0]
                 self.encrypt(pt, ct)
 
-                array[i - 7] = ((ct[1] & 0xffffffff) >> 24) & 0xff
-                array[i - 6] = ((ct[1] & 0xffffffff) >> 16) & 0xff
-                array[i - 5] = ((ct[1] & 0xffffffff) >> 8) & 0xff
-                array[i - 4] = (ct[1] & 0xffffffff) & 0xff
-                array[i - 3] = ((ct[0] & 0xffffffff) >> 24) & 0xff
-                array[i - 2] = ((ct[0] & 0xffffffff) >> 16) & 0xff
-                array[i - 1] = ((ct[0] & 0xffffffff) >> 8) & 0xff
-                array[i]     = (ct[0] & 0xffffffff) & 0xff
+                for j in range(7, -1, -1):
+                    array[i - j] = (ct[j // 4] >> ((j % 4) * 8)) & 0xff
 
-                n2 = j = k = l = 0
+                l = k = 0
+
+        return array
+
+    def decrypt_block(self, block):
+        array = [0] * len(block)
+        n = len(block)
+
+        l = k = 0
+        for i in range(n):
+            if i % 8 < 4:
+                l = (l << 8) | (block[i] & 0xff)
             else:
-                n2 += 1
+                k = (k << 8) | (block[i] & 0xff)
+            
+            if i % 8 == 7:
+                ct = [k, l]
+                pt = [0, 0]
+                self.decrypt(ct, pt)
+
+                for j in range(7, -1, -1):
+                    array[i - j] = (pt[j // 4] >> ((j % 4) * 8)) & 0xff
+
+                l = k = 0
 
         return array

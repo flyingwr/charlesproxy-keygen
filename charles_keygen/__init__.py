@@ -19,10 +19,10 @@ def generate_key(name):
         r = RC5()
         r.schedule(1763497072, 2049034577)
         output_array = r.encrypt_block(name_array)
-
+        
         n = 0
         for by in output_array:
-            n ^= struct.unpack("b", struct.pack("B", by))[0] # get signed
+            n ^= struct.unpack("b", struct.pack("B", by))[0]
             n = rotate_left(n & 0xffffffff, 3)
         return n
 
