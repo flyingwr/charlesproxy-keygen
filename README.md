@@ -15,4 +15,4 @@ if __name__ == "__main__":
 License generated. Name: dummy | Key: 800856A2498358FBBC
 ```
 
-###### tested on versions 4.6.4, 4.6.5 and 4.6.6 of Charles Proxy
+###### tested on versions 4.6.4, 4.6.5, 4.6.6 and 4.6.7 of Charles Proxy
